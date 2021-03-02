@@ -6,39 +6,84 @@ namespace OwensDemageCalculater
 {
     class SwordDamage
     {
-        public const int BASE_DAMAGE = 3;
-        public const int FLAME_DAMAGE = 2;
+        private const int BASE_DAMAGE = 3;
+        private const int FLAME_DAMAGE = 2;
 
-        public int Roll;
-        public decimal MagicMultiplier = 1M;
-        public int FlamingDamage = 0;
-        public int Damage;
+        /// <summary>
+        /// Contains the calculated damage.
+        /// The Damage property's private set accessor
+        /// makes it read-only, so it can't be overwritten 
+        /// by another class.
+        /// </summary>
+        public int Damage { get; private set; }
 
-        public void CalculateDamage()
+        private int roll;
+
+        /// <summary>
+        /// Sets or gets the 3d6 roll
+        /// </summary>
+        public int Roll
         {
-            Damage = (int)(Roll * MagicMultiplier) + BASE_DAMAGE + FlamingDamage;
+            get { return roll; }
+            set
+            {
+                roll = value;
+                CalculateDamage();
+            }
         }
 
-        public void SetMagic(bool isMagic)
+        private bool magic;
+        
+        /// <summary>
+        /// True if the sword is magic, false otherwise.
+        /// </summary>
+        public bool Magic
         {
-            if (isMagic)
+            get { return magic; }
+            set
             {
-                MagicMultiplier = 1.75M;
+                magic = value;
+                CalculateDamage();
             }
-            else
+        }
+
+        private bool flaming;
+
+        /// <summary>
+        /// True if the sword is flaming, false otherwise.
+        /// </summary>
+        public bool Flaming
+        {
+            get { return flaming; }
+            set
             {
-                MagicMultiplier = 1M;
+                flaming = value;
+                CalculateDamage();
             }
+        }
+        /// <summary>
+        /// Calculate the damage based on the current properties.
+        /// </summary>
+        private void CalculateDamage()
+        {
+            decimal magicMultiplier = 1M;
+            if (Magic) magicMultiplier = 1.75M;
+
+            Damage = BASE_DAMAGE;
+            Damage = (int)(Roll * magicMultiplier) + BASE_DAMAGE;
+            if (Flaming) Damage += FLAME_DAMAGE;
+        }
+
+        /// <summary>
+        /// The constructor calculates damage based on defalult Magic
+        /// and Flaming values and starting 3d6 roll.
+        /// </summary>
+        /// <param name="startingRoll">Starting 3d6 roll</param>
+        public SwordDamage(int startingRoll)
+        {
+            roll = startingRoll;
             CalculateDamage();
         }
-
-        public void SetFlaming(bool isFlaming)
-        {
-            CalculateDamage();
-            if (isFlaming)
-            {
-                Damage += FLAME_DAMAGE;
-            }
-        }
+        
     }
 }
